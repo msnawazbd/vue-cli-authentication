@@ -7,25 +7,38 @@
         </div>
         <div class="card-body">
           <!-- login form -->
-          <form>
+          <form @submit.prevent="handleSubmit">
+
             <div class="form-group">
-              <label for="exampleInputEmail1">Email address</label>
+              <label for="name">Name</label>
               <input
-                type="email"
-                class="form-control"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
+                  id="name"
+                  v-model="name"
+                  class="form-control"
+                  type="text"
               />
             </div>
+
             <div class="form-group">
-              <label for="exampleInputPassword1">Password</label>
+              <label for="email">Email address</label>
               <input
-                type="password"
-                class="form-control"
-                id="exampleInputPassword1"
+                  id="email"
+                  v-model="email"
+                  class="form-control"
+                  type="email"
               />
             </div>
-            <button type="submit" class="btn btn-warning btn-block">
+
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input
+                  id="password"
+                  v-model="password"
+                  class="form-control"
+                  type="password"
+              />
+            </div>
+            <button class="btn btn-warning btn-block" type="submit">
               Submit
             </button>
           </form>
@@ -38,8 +51,34 @@
 </template>
 
 <script>
+import UserDataServices from "../services/UserDataServices";
+
 export default {
   name: "Register",
+  data() {
+    return {
+      name: '',
+      email: '',
+      password: '',
+    }
+  },
+  methods: {
+    handleSubmit() {
+      const data = {
+        name: this.name,
+        email: this.email,
+        password: this.password,
+      }
+      UserDataServices.create(data)
+          .then(res => {
+            console.log(res.data)
+            this.$router.push('/login')
+          })
+          .catch(e => {
+            console.log(e)
+          })
+    }
+  }
 };
 </script>
 

@@ -26,8 +26,18 @@
 </template>
 
 <script>
+import UserDataServices from "../services/UserDataServices";
 export default {
   name: "Home",
+  created() {
+    UserDataServices.categories()
+    .then(res => {
+      console.log(res.data)
+    })
+    .catch(e => {
+      console.log(e)
+    })
+  }
 };
 </script>
 

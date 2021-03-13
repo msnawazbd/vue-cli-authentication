@@ -7,22 +7,23 @@
         </div>
         <div class="card-body">
           <!-- login form -->
-          <form>
+          <form @submit.prevent="handleSubmit">
             <div class="form-group">
-              <label for="exampleInputEmail1">Email address</label>
+              <label for="email">Email address</label>
               <input
                 type="email"
                 class="form-control"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
+                id="email"
+                v-model="email"
               />
             </div>
             <div class="form-group">
-              <label for="exampleInputPassword1">Password</label>
+              <label for="password">Password</label>
               <input
                 type="password"
                 class="form-control"
-                id="exampleInputPassword1"
+                id="password"
+                v-model="password"
               />
             </div>
             <button type="submit" class="btn btn-warning btn-block">
@@ -38,8 +39,34 @@
 </template>
 
 <script>
+import UserDataServices from "../services/UserDataServices";
+
 export default {
   name: "Login",
+  data() {
+    return {
+      email: '',
+      password: '',
+    }
+  },
+  methods: {
+    handleSubmit(){
+      const data = {
+        email : this.email,
+        password : this.password
+      }
+      UserDataServices.login(data)
+      .then(res => {
+        console.log(res.data)
+        /*localStorage.setItem('token', res.data.token)
+        console.log(localStorage.getItem('token'))
+        this.$router.push('/')*/
+      })
+      .catch(e => {
+        console.log(e)
+      })
+    }
+  }
 };
 </script>
 
