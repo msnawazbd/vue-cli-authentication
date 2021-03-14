@@ -9,8 +9,8 @@ class UserDataServices {
         return http.post("/login", data)
     }
 
-    categories(){
-        return http.get("/categories")
+    user(){
+        return http.get("/user")
     }
 }
 

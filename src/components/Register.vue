@@ -8,7 +8,7 @@
         <div class="card-body">
           <!-- login form -->
           <form @submit.prevent="handleSubmit">
-
+            <error :v-if="error" :error=error />
             <div class="form-group">
               <label for="name">Name</label>
               <input
@@ -52,14 +52,19 @@
 
 <script>
 import UserDataServices from "../services/UserDataServices";
+import Error from "../components/Error"
 
 export default {
   name: "Register",
+  components: {
+    Error
+  },
   data() {
     return {
       name: '',
       email: '',
       password: '',
+      error: '',
     }
   },
   methods: {
@@ -75,6 +80,7 @@ export default {
             this.$router.push('/login')
           })
           .catch(e => {
+            this.error = "Registration Failed!"
             console.log(e)
           })
     }

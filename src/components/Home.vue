@@ -1,5 +1,13 @@
 <template>
   <div class="row justify-content-center">
+    <div class="col-md-12 mb-5">
+      <div class="card">
+        <div class="card-body">
+          <p v-if="user" class="mb-0">Hello, {{ user.name }}</p>
+          <p v-if="!user" class="mb-0">You are not login!</p>
+        </div>
+      </div>
+    </div>
     <div class="col-md-12 col-sm-12">
       <div class="card">
         <div class="card-header">
@@ -26,17 +34,12 @@
 </template>
 
 <script>
-import UserDataServices from "../services/UserDataServices";
+import {mapGetters} from 'vuex'
+
 export default {
   name: "Home",
-  created() {
-    UserDataServices.categories()
-    .then(res => {
-      console.log(res.data)
-    })
-    .catch(e => {
-      console.log(e)
-    })
+  computed: {
+    ...mapGetters(['user'])
   }
 };
 </script>

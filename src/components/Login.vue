@@ -8,6 +8,7 @@
         <div class="card-body">
           <!-- login form -->
           <form @submit.prevent="handleSubmit">
+            <error v-if="error" :error='error'/>
             <div class="form-group">
               <label for="email">Email address</label>
               <input
@@ -40,33 +41,40 @@
 
 <script>
 import UserDataServices from "../services/UserDataServices";
+import Error from './Error'
 
 export default {
   name: "Login",
+  components: {
+    Error
+  },
   data() {
     return {
-      email: '',
-      password: '',
-    }
+      email: "",
+      password: "",
+      error: "",
+    };
   },
   methods: {
-    handleSubmit(){
+    handleSubmit() {
       const data = {
-        email : this.email,
-        password : this.password
-      }
+        email: this.email,
+        password: this.password,
+      };
+
       UserDataServices.login(data)
-      .then(res => {
-        console.log(res.data)
-        /*localStorage.setItem('token', res.data.token)
-        console.log(localStorage.getItem('token'))
-        this.$router.push('/')*/
-      })
-      .catch(e => {
-        console.log(e)
-      })
-    }
-  }
+        .then((res) => {
+          localStorage.setItem("token", res.data.data.token.access_token);
+          this.$store.dispatch("user", res.data.data.user);
+          console.log(res.data);
+          this.$router.push("/");
+        })
+        .catch((e) => {
+          this.error = 'Invalid username/password!'
+          console.log(e);
+        });
+    },
+  },
 };
 </script>
 

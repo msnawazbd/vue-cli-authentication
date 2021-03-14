@@ -7,7 +7,7 @@
     <!-- main content -->
     <div class="main-content my-5">
       <div class="container">
-          <router-view/>
+          <router-view />
       </div>
     </div>
     <!-- ./end main content -->
@@ -19,6 +19,8 @@
 </template>
 
 <script>
+import UserDataServices from "./services/UserDataServices";
+
 import Nav from './components/Nav.vue';
 import Footer from './components/Footer.vue';
 
@@ -27,6 +29,21 @@ export default {
   components: {
      Nav, Footer
   },
+  data(){
+    return {
+      // user: null
+    }
+  },
+  created() {
+    UserDataServices.user()
+    .then(res => {
+      this.$store.dispatch('user', res.data.user)
+      console.log(res.data)
+    })
+    .catch(e => {
+      console.log(e)
+    })
+  }
 };
 </script>
 
