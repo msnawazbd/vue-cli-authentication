@@ -3,7 +3,7 @@
     <div class="col-md-4 col-sm-12">
       <div class="card">
         <div class="card-header">
-          <h5 class="card-title mb-0">Add Category</h5>
+          <h5 class="card-title mb-0">Add Post</h5>
         </div>
         <div class="card-body">
           <!-- login form -->
@@ -13,12 +13,38 @@
               {{ message }}
             </div>
             <div class="form-group">
-              <label for="name">Category Name</label>
+              <label for="title">Post Title</label>
               <input
                 type="text"
                 class="form-control"
-                id="name"
-                v-model="name"
+                id="title"
+                v-model="title"
+              />
+            </div>
+            <div class="form-group">
+              <label for="category_id">Category</label>
+              <select
+                class="form-control"
+                id="category_id"
+                v-model="category_id"
+              >
+                <option value="0">All</option>
+                <option
+                  :value="category.id"
+                  v-for="(category, index) in categories"
+                  :key="index"
+                >
+                  {{ category.name }}
+                </option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="photo">Post Photo</label>
+              <input
+                @change="changePhoto"
+                class="form-control-file"
+                id="photo"
+                type="file"
               />
             </div>
             <div class="form-group">
@@ -50,27 +76,30 @@
     <div class="col-md-8 col-sm-12">
       <div class="card">
         <div class="card-header">
-          <h5 class="card-title mb-0">Manage Categories</h5>
+          <h5 class="card-title mb-0">Manage Posts</h5>
         </div>
         <div class="card-body p-0">
           <table class="table">
             <thead>
               <tr>
                 <th scope="col">SL</th>
-                <th scope="col">Category Name</th>
+                <th scope="col">Post Title</th>
+                <th scope="col">Category</th>
                 <th scope="col">Status</th>
                 <th scope="col">Created By</th>
                 <th scope="col">Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(category, index) in categories" :key="category.id">
+              <tr v-for="(post, index) in posts" :key="post.id">
                 <th scope="row">{{ index + +1 }}</th>
-                <td>{{ category.name }}</td>
+                <td>{{ post.title }}</td>
+                <td>{{ post.category.name }}</td>
                 <td>
-                  {{ category.status }}
+                  <p v-if="post.status === 1">Published</p>
+                  <p v-if="post.status === 0">Unpublished</p>
                 </td>
-                <td>{{ category.created_user.name }}</td>
+                <td>{{ post.created_user.name }}</td>
                 <td>
                   <button class="btn btn-sm btn-danger">Delete</button>
                 </td>
@@ -85,39 +114,62 @@
 </template>
 
 <script>
+import PostDataServices from "../services/PostDataServices";
 import CategoryDataServices from "../services/CategoryDataServices";
 import Error from "./Error";
 
 export default {
-  name: "Category",
+  name: "Post",
   components: {
     Error,
   },
   data() {
     return {
-      name: "",
+      title: "",
       details: "",
+      category_id: "0",
       status: 1,
+      photo: "",
+      photo_original_name: "",
       categories: {},
+      posts: {},
       error: "",
       message: "",
     };
   },
   methods: {
+    changePhoto(e) {
+      let file = e.target.files[0];
+      this.photo_original_name = file.name
+      let reader = new FileReader();
+
+      if (file["size"] < 4410390) {
+        reader.onloadend = () => {
+          this.photo = reader.result;
+          // console.log(file);
+        }
+        reader.readAsDataURL(file)
+      } else {
+        console.log("File size too large.");
+      }
+    },
     handleSubmit() {
       const data = {
-        name: this.name,
+        title: this.title,
+        category_id: this.category_id,
         details: this.details,
         status: this.status,
+        photo: this.photo,
+        photo_original_name: this.photo_original_name,
       };
-      CategoryDataServices.create(data)
+      PostDataServices.create(data)
         .then((res) => {
           console.log(res.data);
-          this.message = "Category Insertion Success!";
-          this.$router.push("/category").catch(() => {});
+          this.message = "Post Insertion Success!";
+          this.$router.push("/post").catch(() => {});
         })
         .catch((e) => {
-          this.error = "Category Insertion Failed!";
+          this.error = "Post Insertion Failed!";
           console.log(e);
         });
     },
@@ -126,6 +178,15 @@ export default {
     CategoryDataServices.categories()
       .then((res) => {
         this.categories = res.data.categories;
+        console.log(res.data);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+
+    PostDataServices.posts()
+      .then((res) => {
+        this.posts = res.data.posts;
         console.log(res.data);
       })
       .catch((e) => {

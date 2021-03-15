@@ -21,6 +21,9 @@
         <li class="nav-item" v-if="user">
           <router-link to="/category" class="nav-link">Category</router-link>
         </li>
+        <li class="nav-item" v-if="user">
+          <router-link to="/post" class="nav-link">Post</router-link>
+        </li>
       </ul>
       <ul class="navbar-nav ml-auto" v-if="!user">
         <li class="nav-item">

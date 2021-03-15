@@ -26,6 +26,11 @@ export default new Router({
             path: '/category',
             name: 'category',
             component: () => import("./components/Category")
+        },
+        {
+            path: '/post',
+            name: 'post',
+            component: () => import("./components/Post")
         }
     ]
 })
