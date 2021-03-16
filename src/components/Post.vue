@@ -39,11 +39,11 @@
               </select>
             </div>
             <div class="form-group">
-              <label for="photo">Post Photo</label>
+              <label for="base64_encoded_file">Post Photo</label>
               <input
                 @change="changePhoto"
                 class="form-control-file"
-                id="photo"
+                id="base64_encoded_file"
                 type="file"
               />
             </div>
@@ -85,6 +85,7 @@
                 <th scope="col">SL</th>
                 <th scope="col">Post Title</th>
                 <th scope="col">Category</th>
+                <th scope="col">Photo</th>
                 <th scope="col">Status</th>
                 <th scope="col">Created By</th>
                 <th scope="col">Action</th>
@@ -95,6 +96,9 @@
                 <th scope="row">{{ index + +1 }}</th>
                 <td>{{ post.title }}</td>
                 <td>{{ post.category.name }}</td>
+                <td>
+                  <img :src="'http://blogapi.clustercoding.com/post-image/' + post.photo" alt="" width="80">
+                </td>
                 <td>
                   <p v-if="post.status === 1">Published</p>
                   <p v-if="post.status === 0">Unpublished</p>
@@ -129,8 +133,9 @@ export default {
       details: "",
       category_id: "0",
       status: 1,
-      photo: "",
-      photo_original_name: "",
+      base64_encoded_file: "",
+      file_original_name: "",
+      file_upload_path: "/post-image/",
       categories: {},
       posts: {},
       error: "",
@@ -140,17 +145,20 @@ export default {
   methods: {
     changePhoto(e) {
       let file = e.target.files[0];
-      this.photo_original_name = file.name
+      // get file original name
+      this.file_original_name = file.name
       let reader = new FileReader();
 
-      if (file["size"] < 4410390) {
+      // check file size
+      if (file["size"] < 5000000) {
         reader.onloadend = () => {
-          this.photo = reader.result;
-          // console.log(file);
+          // get base64 encoded value
+          this.base64_encoded_file = reader.result
+          // console.log(reader.result)
         }
         reader.readAsDataURL(file)
       } else {
-        console.log("File size too large.");
+        console.log("File size too large. Max 5Mb allowed!");
       }
     },
     handleSubmit() {
@@ -159,8 +167,9 @@ export default {
         category_id: this.category_id,
         details: this.details,
         status: this.status,
-        photo: this.photo,
-        photo_original_name: this.photo_original_name,
+        base64_encoded_file: this.base64_encoded_file,
+        file_original_name: this.file_original_name,
+        file_upload_path: this.file_upload_path,
       };
       PostDataServices.create(data)
         .then((res) => {
